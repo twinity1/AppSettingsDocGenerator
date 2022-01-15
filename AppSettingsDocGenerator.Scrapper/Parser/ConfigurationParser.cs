@@ -1,4 +1,5 @@
 using System.Reflection;
+using AppSettingsDocGenerator.Scrapper.Attributes;
 using AppSettingsDocGenerator.Scrapper.Documentation;
 using Microsoft.Extensions.Configuration;
 
@@ -8,18 +9,12 @@ public class ConfigurationParser
 {
     public class SectionParseErrorException : Exception
     {
-        public SectionParseErrorException(string message): base(message)
-        {
-            
-        }
+        public SectionParseErrorException(string message): base(message) { }
     }
 
-    private const int MaxDepth = 25;
-    
-    public class MaxDepthReachedException : Exception
-    {
-        
-    }
+    private const int MaxDepth = 80;
+
+    private class MaxDepthReachedException : Exception { }
     
     private readonly IDocumentationProvider _documentationProvider;
     private readonly Dictionary<Type, IConfigurationSection> _configurations;
@@ -40,7 +35,6 @@ public class ConfigurationParser
         {
             try
             {
-                _currentDepth = 0;
                 result.Add(ParseConfiguration(type, configurationSection));
             }
             catch (Exception e)
@@ -52,15 +46,41 @@ public class ConfigurationParser
         return result;
     }
 
+    private IEnumerable<PropertyInfo> GetPropertiesForParse(Type type)
+    {
+        DocsStrategy? strategy = null;
+
+        var docsStrategyAttribute = type.GetCustomAttribute<DocsStrategyAttribute>();
+
+        if (docsStrategyAttribute != null)
+        {
+            strategy = docsStrategyAttribute.DocsStrategy;
+        }
+
+        return strategy switch
+        {
+            null => type.GetProperties(),
+            DocsStrategy.ExcludeAll => type.GetProperties().Where(x => x.GetCustomAttribute<DocsIncludeAttribute>() != null),
+            DocsStrategy.IncludeAll => type.GetProperties().Where(x => x.GetCustomAttribute<DocsExcludeAttribute>() == null),
+            _ => throw new ArgumentOutOfRangeException(nameof(type), "Strategy not found")
+        };
+    }
+
     private ParseResult ParseConfiguration(Type type, IConfigurationSection configurationSection)
     {
         var children = new List<ParseResult>();
         
-        foreach (var propertyInfo in type.GetProperties())
+        foreach (var propertyInfo in GetPropertiesForParse(type))
         {
-            var parseResult = ParseProperty(propertyInfo);
-            
-            children.Add(parseResult);
+            try
+            {
+                var parseResult = ParseProperty(propertyInfo);
+                children.Add(parseResult);
+            }
+            catch (MaxDepthReachedException)
+            {
+                _currentDepth = 0;
+            }
         }
 
         return new ParseResult
