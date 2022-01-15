@@ -1,0 +1,100 @@
+{
+  "title": "ahoy",
+  "schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "config1": {
+      "type": "object",
+      "description": "This is config 1",
+      "properties": {
+        "XX": {
+          "type": "string",
+          "description": "Ahoy!"
+        },
+        "YY": {
+          "type": "string"
+        },
+        "RandomNestedConfig": {
+          "type": "object",
+          "description": "This is config 2",
+          "properties": {
+            "Url": {
+              "type": "string",
+              "description": "This is random URL"
+            }
+          }
+        },
+        "nested": {
+          "type": "object",
+          "description": "This section is nested!",
+          "properties": {
+            "NestedProperty1": {
+              "type": "boolean",
+              "description": "This is nested property with description"
+            },
+            "NestedProperty2": {
+              "type": "string"
+            },
+            "NestedProperty3": {
+              "type": "integer"
+            },
+            "NestedProperty4": {
+              "type": "number"
+            },
+            "NestedProperty5": {
+              "type": "number"
+            },
+            "NestedProperty6": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "serviceTypes": {
+      "type": "object",
+      "properties": {
+        "Type": {
+          "type": "string",
+          "description": "Which service to use?",
+          "enum": [
+            "One",
+            "Two",
+            "Three"
+          ]
+        }
+      }
+    },
+    "arrayTest": {
+      "type": "object",
+      "description": "This config contains arrays",
+      "properties": {
+        "Urls": {
+          "type": "array",
+          "description": "Set of valid urls",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Services": {
+          "type": "array",
+          "description": "Set of services config",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Type": {
+                "type": "string",
+                "description": "Which service to use?",
+                "enum": [
+                  "One",
+                  "Two",
+                  "Three"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
