@@ -27,20 +27,23 @@ public class MdFlatTemplateGenerator : ITemplateGenerator
         return result.ToString();
     }
 
-    private void AddItems(StringBuilder output, JsonSchemaItem jsonSchemaItem, string path, string? title = null)
+    private void AddItems(StringBuilder output, JsonSchemaItem jsonSchemaItem, string path, bool showTitle = true)
     {
         if (jsonSchemaItem.Properties != null)
         {
-            output.Append($"\n{path}\n--------\n");
-
-            var descriptionOfSection = jsonSchemaItem.Description ?? title;
-
-            if (descriptionOfSection != null)
+            if (showTitle)
             {
-                output.Append($"{descriptionOfSection}\n");
-            }
+                output.Append($"\n{path}\n--------\n");
 
-            output.Append("\n");
+                var descriptionOfSection = jsonSchemaItem.Description;
+
+                if (descriptionOfSection != null)
+                {
+                    output.Append($"{descriptionOfSection}\n");
+                }
+
+                output.Append("\n");
+            }
             
             foreach (var (key, jsonItem) in jsonSchemaItem.Properties)
             {
@@ -48,13 +51,13 @@ public class MdFlatTemplateGenerator : ITemplateGenerator
 
                 if (jsonItem.Items != null)
                 {
-                    AddItems(output, jsonItem.Items, $"{path}.{key}[..]", jsonItem.Description ?? jsonItem.Items.Description);
+                    AddItems(output, jsonItem.Items, $"{path}.{key}[..]", false);
                 }
             }
             return;
         }
 
-        output.Append($"- {path} ({jsonSchemaItem.Type}){(jsonSchemaItem.Enum != null ? (" - " + string.Join(",", jsonSchemaItem.Enum) + " ") : "")}");
+        output.Append($"- `{path}` *({jsonSchemaItem.Type})*{(jsonSchemaItem.Enum != null ? (" - " + string.Join(",", jsonSchemaItem.Enum) + " ") : "")}");
 
         if (jsonSchemaItem.Description != null)
         {

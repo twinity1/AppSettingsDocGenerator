@@ -8,7 +8,7 @@ public class ConfigurationInstaller : IConfigurationInstaller
     {
         collection.ConfigureWithDocs<Config1>(configuration.GetSection("config1"));
         collection.ConfigureWithDocs<NestedSectionConfig>(configuration.GetSection("config1").GetSection("nested"));
-        collection.ConfigureWithDocs<Services>(configuration.GetSection("serviceTypes"));
+        collection.ConfigureWithDocs<Service>(configuration.GetSection("serviceTypes"));
         collection.ConfigureWithDocs<ArrayConfig>(configuration.GetSection("arrayTest"));
         
         return collection;
@@ -28,7 +28,17 @@ public class ArrayConfig
     /// <summary>
     /// Set of services config
     /// </summary>
-    public ICollection<Services> Services { get; set; }
+    public ICollection<Service> Services { get; set; }
+    
+    /// <summary>
+    /// Set of secret services
+    /// </summary>
+    public Service[] SecretsServices { get; set; }
+    
+    /// <summary>
+    /// Set of secret words
+    /// </summary>
+    public string[] SecretsWords { get; set; }
 }
 
 /// <summary>
@@ -52,12 +62,17 @@ public class NestedSectionConfig
     public decimal NestedProperty6 { get; set; }
 }
 
-public class Services
+public class Service
 {
     /// <summary>
-    /// Which service to use?
+    /// Type of the service
     /// </summary>
     public ServiceType Type { get; set; }
+    
+    /// <summary>
+    /// Service name
+    /// </summary>
+    public string Name { get; set; }
 }
 
 public enum ServiceType

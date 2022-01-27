@@ -1,5 +1,4 @@
 {
-  "title": "ahoy",
   "schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
@@ -56,12 +55,16 @@
       "properties": {
         "Type": {
           "type": "string",
-          "description": "Which service to use?",
+          "description": "Type of the service",
           "enum": [
             "One",
             "Two",
             "Three"
           ]
+        },
+        "Name": {
+          "type": "string",
+          "description": "Service name"
         }
       }
     },
@@ -70,11 +73,8 @@
       "description": "This config contains arrays",
       "properties": {
         "Urls": {
-          "type": "array",
-          "description": "Set of valid urls",
-          "items": {
-            "type": "string"
-          }
+          "type": "string",
+          "description": "Set of valid urls"
         },
         "Services": {
           "type": "array",
@@ -84,14 +84,47 @@
             "properties": {
               "Type": {
                 "type": "string",
-                "description": "Which service to use?",
+                "description": "Type of the service",
                 "enum": [
                   "One",
                   "Two",
                   "Three"
                 ]
+              },
+              "Name": {
+                "type": "string",
+                "description": "Service name"
               }
             }
+          }
+        },
+        "SecretsServices": {
+          "type": "array",
+          "description": "Set of secret services",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Type": {
+                "type": "string",
+                "description": "Type of the service",
+                "enum": [
+                  "One",
+                  "Two",
+                  "Three"
+                ]
+              },
+              "Name": {
+                "type": "string",
+                "description": "Service name"
+              }
+            }
+          }
+        },
+        "SecretsWords": {
+          "type": "array",
+          "description": "Set of secret words",
+          "items": {
+            "type": "string"
           }
         }
       }

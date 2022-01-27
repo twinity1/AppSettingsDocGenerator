@@ -134,16 +134,23 @@ public class ConfigurationParser
         }
         else
         {
-            if (propertyInfo.PropertyType.IsGenericType)
+            var arrayType = propertyInfo
+                .PropertyType
+                .GetInterfaces()
+                .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))?
+                .GetGenericArguments().FirstOrDefault()
+                ??
+                propertyInfo.PropertyType.GetElementType();
+            
+            if (arrayType != null && propertyInfo.PropertyType != typeof(string))
             {
                 isArray = true;
-                referenceType = propertyInfo.PropertyType.GetGenericArguments().First();
-
-                if (IsComplexType(referenceType))
+                
+                if (IsComplexType(arrayType))
                 {
                     isComplex = true;
                     
-                    foreach (var childPropertyInfo in referenceType.GetProperties())
+                    foreach (var childPropertyInfo in arrayType.GetProperties())
                     {
                         var parseResult = ParseProperty(childPropertyInfo);
             
