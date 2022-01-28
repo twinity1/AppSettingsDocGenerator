@@ -73,8 +73,11 @@
       "description": "This config contains arrays",
       "properties": {
         "Urls": {
-          "type": "string",
-          "description": "Set of valid urls"
+          "type": "array",
+          "description": "Set of valid urls",
+          "items": {
+            "type": "string"
+          }
         },
         "Services": {
           "type": "array",

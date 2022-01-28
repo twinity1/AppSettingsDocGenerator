@@ -35,7 +35,8 @@ arrayTest
 --------
 This config contains arrays
 
-- `arrayTest.Urls` *(string)* => Set of valid urls
+- `arrayTest.Urls` *(array)* => Set of valid urls
+- `arrayTest.Urls[..]` *(string)*
 - `arrayTest.Services` *(array)* => Set of services config
 - `arrayTest.Services[..].Type` *(string)* - One,Two,Three  => Type of the service
 - `arrayTest.Services[..].Name` *(string)* => Service name

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Reflection;
 using AppSettingsDocGenerator.Scrapper.Attributes;
 using AppSettingsDocGenerator.Scrapper.Documentation;
@@ -134,15 +135,9 @@ public class ConfigurationParser
         }
         else
         {
-            var arrayType = propertyInfo
-                .PropertyType
-                .GetInterfaces()
-                .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))?
-                .GetGenericArguments().FirstOrDefault()
-                ??
-                propertyInfo.PropertyType.GetElementType();
+            var arrayType = TryGetArrayType(propertyInfo);
             
-            if (arrayType != null && propertyInfo.PropertyType != typeof(string))
+            if (arrayType != null)
             {
                 isArray = true;
                 
@@ -173,5 +168,46 @@ public class ConfigurationParser
             ReferenceType = referenceType,
             IsArray = isArray
         };
+    }
+
+    private static Type? TryGetArrayType(PropertyInfo propertyInfo)
+    {
+        if (propertyInfo.PropertyType == typeof(string))
+        {
+            return null;
+        }
+
+        // generic collections ICollection<T>, List<T>, etc.
+        var genericType = propertyInfo
+            .PropertyType
+            .GetInterfaces()
+            .FirstOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))?
+            .GetGenericArguments()
+            .FirstOrDefault();
+
+        if (genericType != null)
+        {
+            return genericType;
+        }
+        
+        // array type - string[], object[], etc. 
+        var arrayType = propertyInfo.PropertyType.GetElementType();
+
+        if (arrayType != null)
+        {
+            return arrayType;
+        }
+
+        // non generic IEnumerable
+        var nonGenericEnumerable = propertyInfo.PropertyType
+            .GetInterfaces()
+            .Any(x => x == typeof(IEnumerable));
+
+        if (nonGenericEnumerable)
+        {
+            return propertyInfo.PropertyType.GetGenericArguments().FirstOrDefault();
+        }
+
+        return null;
     }
 }
