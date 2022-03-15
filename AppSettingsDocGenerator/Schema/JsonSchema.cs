@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace AppSettingsDocGenerator.Schema;
 
 public class JsonSchema : JsonSchemaItem
@@ -9,5 +11,6 @@ public class JsonSchema : JsonSchemaItem
         Type = "object";
     }
 
-    public string Schema { get; } = "https://json-schema.org/draft/2020-12/schema";
+    [JsonPropertyName("$schema")]
+    public string Schema { get; } = "http://json-schema.org/draft-07/schema";
 }
