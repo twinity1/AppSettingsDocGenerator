@@ -8,6 +8,8 @@ public class JsonSchemaGenerator
 {
     public string? Title { get; set; }
     
+    public Func<string, bool>? IncludeField { get; set; }
+
     public string Generate(IEnumerable<ParseResult> parseResults)
     {
         var schema = new Scrapper.JsonSchema.JsonSchema
@@ -29,6 +31,11 @@ public class JsonSchemaGenerator
 
     private void CreateItem(string path, JsonSchemaItem parentItem, ParseResult parseResult)
     {
+        if (IncludeField?.Invoke(path) == false)
+        {
+            return;
+        }
+        
         var keys = path.Split(".");
         
         if (parentItem.Properties == null)
